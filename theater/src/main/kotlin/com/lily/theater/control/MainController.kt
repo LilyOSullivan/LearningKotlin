@@ -1,5 +1,6 @@
 package com.lily.theater.control
 
+import com.lily.theater.data.SeatRepository
 import com.lily.theater.services.BookingService
 import com.lily.theater.services.TheaterService
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,8 +18,11 @@ class MainController {
     @Autowired
     lateinit var bookingService: BookingService
 
+    @Autowired
+    lateinit var seatRepository: SeatRepository
+
     @RequestMapping("")
-    fun HomePage() = ModelAndView(
+    fun homePage() = ModelAndView(
         "seatBooking",
         "bean",
         CheckAvailabilityBackingBean()
@@ -31,6 +35,14 @@ class MainController {
         bean.result = "Seat $selectedSeat is " + if (result) "available" else "unavailable"
         return ModelAndView("seatBooking", "bean", bean)
     }
+
+    @RequestMapping("bootstrap")
+    fun bootstrap(): ModelAndView {
+        val seats = theaterService.seats
+        seatRepository.saveAll(seats)
+        return homePage()
+    }
+
 }
 
 class CheckAvailabilityBackingBean() {
